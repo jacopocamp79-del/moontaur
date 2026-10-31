@@ -1203,10 +1203,10 @@ function stopForest(){
     try{ctx.close()}catch(e){}
   }
 }
-$("rainButton").onclick=()=>{
+$("rainButton").onclick=async()=>{
   const on=$("rainButton").getAttribute("aria-pressed")!=="true";
   if(on){
-    startForest();$("rainButton").classList.add("on");$("rainButton").setAttribute("aria-pressed","true");
+  await startForest();$("rainButton").classList.add("on");$("rainButton").setAttribute("aria-pressed","true");
     $("rainLabel").textContent="ON";soundPanel.hidden=false;
   }else{
     stopForest();$("rainButton").classList.remove("on");$("rainButton").setAttribute("aria-pressed","false");
