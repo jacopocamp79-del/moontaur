@@ -1204,13 +1204,37 @@ function stopForest(){
   }
 }
 $("rainButton").onclick=async()=>{
-  const on=$("rainButton").getAttribute("aria-pressed")!=="true";
-  if(on){
-  await startForest();$("rainButton").classList.add("on");$("rainButton").setAttribute("aria-pressed","true");
-    $("rainLabel").textContent="ON";soundPanel.hidden=false;
-  }else{
-    stopForest();$("rainButton").classList.remove("on");$("rainButton").setAttribute("aria-pressed","false");
-    $("rainLabel").textContent="OFF";soundPanel.hidden=true;
+  const button=$("rainButton");
+  const label=$("rainLabel");
+  if(button.getAttribute("aria-pressed")==="true"){
+    stopForest();
+    button.classList.remove("on");
+    button.setAttribute("aria-pressed","false");
+    label.textContent="OFF";
+    soundPanel.hidden=true;
+    return;
+  }
+
+  button.disabled=true;
+  label.textContent="LOADING...";
+  try{
+    await startForest();
+    if(!audioCtx || audioCtx.state!=="running" || !forestRunning){
+      throw new Error("AudioContext is not running");
+    }
+    button.classList.add("on");
+    button.setAttribute("aria-pressed","true");
+    label.textContent="ON";
+    soundPanel.hidden=false;
+  }catch(error){
+    stopForest();
+    button.classList.remove("on");
+    button.setAttribute("aria-pressed","false");
+    label.textContent="OFF";
+    soundPanel.hidden=true;
+    alert("MOONTAUR AUDIO ERROR: "+error.message);
+  }finally{
+    button.disabled=false;
   }
 };
 ["rainVolume","cricketVolume","windVolume","fireVolume"].forEach(id=>$(id).addEventListener("input",updateSoundLevels));
